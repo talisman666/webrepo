@@ -1,0 +1,56 @@
+﻿@{
+        ViewData["Title"] = "Index";
+    }
+
+
+        <div class="container">
+            <h1>Лабораторная работа 1</h1>
+                <h1>@ViewData["Text"] </h1>
+                <h2>Список</h2>
+            <ol title="Список" type="A">
+                @for (int i = 1; i < 5; i++)
+                {
+                    <li>элемент @i списка</li>
+                }
+            </ol>
+            <hr />
+            <h2>Форма</h2>
+            <select asp-items="@ViewData[ "Lst"] as SelectList"></select>
+            <form method="post">
+                <div class="container col-sm-8">
+                    <input type="checkbox" name="ch1" value="ch1">Чек-бокс 1<br />
+                    <input type="checkbox" name="ch2" value="ch2">Чек-бокс 2<br />
+                </div>
+                <p>
+                    <div class="container col-md-8">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                            <label class="form-check-label" for="inlineRadio1">Радио-1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                            <label class="form-check-label" for="inlineRadio2">Радио-2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
+                            <label class="form-check-label" for="inlineRadio3">Радио-3</label>
+                        </div>
+                    </div>
+                </p>
+
+                <div class="form-group">
+                    <label for="loginInput">Логин:</label>
+                    <input type="email" class="form-control" id="loginInput" aria-describedby="emailHelp" placeholder="Введите логин">
+
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Пароль:</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Пароль">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+
+        </div>
+
+
