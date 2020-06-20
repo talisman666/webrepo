@@ -16,6 +16,8 @@
 //using WebApplication1.DAL.Data;
 //using WebApplication1.Services;
 
+
+
 //namespace WebApplication1
 //{
 //    public class Startup
@@ -30,11 +32,12 @@
 //        // This method gets called by the runtime. Use this method to add services to the container.
 //        public void ConfigureServices(IServiceCollection services)
 //        {
+
+//            //        .AddRazorRuntimeCompilation();
 //            services.AddDbContext<ApplicationDbContext>(options =>
 //                options.UseSqlServer(
 //                    Configuration.GetConnectionString("DefaultConnection")));
 //            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 //            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 //            {
 //                options.SignIn.RequireConfirmedAccount = false;
@@ -43,7 +46,9 @@
 //                options.Password.RequireUppercase = false;
 //                options.Password.RequireDigit = false;
 //            })
-//             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+//            .AddDefaultTokenProviders()
+//            .AddEntityFrameworkStores<ApplicationDbContext>();
 
 //            services.AddControllersWithViews();
 //            services.AddRazorPages();
@@ -51,11 +56,12 @@
 
 //        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 //        public void Configure(IApplicationBuilder app,
-//                                IWebHostEnvironment env,
-//                                ApplicationDbContext context,
-//                                UserManager<ApplicationUser> userManager,
-//                                RoleManager<IdentityRole> roleManager)
+//                              IWebHostEnvironment env,
+//                              ApplicationDbContext context,
+//                              UserManager<ApplicationUser> userManager,
+//                              RoleManager<IdentityRole> roleManager)
 //        {
+
 //            if (env.IsDevelopment())
 //            {
 //                app.UseDeveloperExceptionPage();
@@ -70,14 +76,13 @@
 
 
 //            DbInitializer.Seed(context, userManager, roleManager)
-//                         .GetAwaiter()
-//                         .GetResult();
+//                .GetAwaiter()
+//                .GetResult();
 
 //            app.UseHttpsRedirection();
 //            app.UseStaticFiles();
 
 //            app.UseRouting();
-
 //            app.UseAuthentication();
 //            app.UseAuthorization();
 
@@ -91,10 +96,10 @@
 //        }
 //    }
 //}
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -108,8 +113,11 @@ using Microsoft.Extensions.Hosting;
 using WebApplication1.DAL.Entities;
 using WebApplication1.DAL.Data;
 using WebApplication1.Services;
-
-
+using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Models;
+using Microsoft.AspNetCore.Http;
+using WebApplication1.Extentions;
+using Microsoft.Extensions.Logging;
 
 namespace WebApplication1
 {
@@ -125,6 +133,16 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+            services.AddSession(opt =>
+            {
+                opt.Cookie.HttpOnly = true;
+                opt.Cookie.IsEssential = true;
+            });
+            services.AddScoped<Cart>(sp => CartService.GetCart(sp));
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
 
             //        .AddRazorRuntimeCompilation();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -143,8 +161,20 @@ namespace WebApplication1
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(opt =>
+            {
+                opt.Cookie.HttpOnly = true;
+                opt.Cookie.IsEssential = true;
+            });
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+         //   services.AddScoped<Cart>(sp => CartService.GetCart(sp));
+
             services.AddControllersWithViews();
             services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -152,7 +182,8 @@ namespace WebApplication1
                               IWebHostEnvironment env,
                               ApplicationDbContext context,
                               UserManager<ApplicationUser> userManager,
-                              RoleManager<IdentityRole> roleManager)
+                              RoleManager<IdentityRole> roleManager,
+                              ILoggerFactory logger)
         {
 
             if (env.IsDevelopment())
@@ -167,6 +198,8 @@ namespace WebApplication1
                 app.UseHsts();
             }
 
+            //logger.AddFile("Logs/log-{Date}.txt");
+            //app.UseFileLogging();
 
             DbInitializer.Seed(context, userManager, roleManager)
                 .GetAwaiter()
@@ -176,7 +209,11 @@ namespace WebApplication1
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
+
             app.UseAuthentication();
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -6,6 +6,7 @@ using Xunit;
 
 using WebApplication1.Controllers;
 using WebApplication1.DAL.Entities;
+using WebApplication1.DAL.Data;
 
 namespace WebApplication1.Tests
 {
@@ -32,6 +33,25 @@ namespace WebApplication1.Tests
              new Dish{ DishId=5, DishGroupId=3}
              };
         }
+
+        public static void FillContext(ApplicationDbContext context)
+        {
+            context.DishGroups.Add(new DishGroup
+            { GroupName = "fake group" });
+            context.AddRange(new List<Dish>
+            {
+            new Dish{ DishId=1, DishGroupId=1},
+            new Dish{ DishId=2, DishGroupId=1},
+            new Dish{ DishId=3, DishGroupId=2},
+            new Dish{ DishId=4, DishGroupId=2},
+            new Dish{ DishId=5, DishGroupId=3}
+            });
+            context.SaveChanges();
+        }
+
+
+
+
         public static IEnumerable<object[]> Params()
         {
             // 1-я страница, кол. объектов 3, id первого объекта 1
