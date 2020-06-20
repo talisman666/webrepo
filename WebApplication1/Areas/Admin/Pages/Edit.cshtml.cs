@@ -28,6 +28,7 @@ namespace WebApplication1
 
         [BindProperty]
         public IFormFile Image { get; set; }
+        [BindProperty]
         public Dish Dish { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)

@@ -17,9 +17,9 @@ namespace WebApplication1
     {
         private readonly WebApplication1.DAL.Data.ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
-        private IWebHostEnvironment env;
+      //  private IWebHostEnvironment env;
 
-        public CreateModel(WebApplication1.DAL.Data.ApplicationDbContext context)
+        public CreateModel(WebApplication1.DAL.Data.ApplicationDbContext context,     IWebHostEnvironment env)
         {
             _context = context;
             _environment = env;
@@ -34,6 +34,7 @@ namespace WebApplication1
 
         [BindProperty]
         public IFormFile Image { get; set; }
+        [BindProperty]
         public Dish Dish { get; set; }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -49,11 +50,9 @@ namespace WebApplication1
             await _context.SaveChangesAsync();
             if (Image != null)
             {
-                var fileName = $"{Dish.DishId}" +
-                Path.GetExtension(Image.FileName);
+                var fileName = $"{Dish.DishId}" +  Path.GetExtension(Image.FileName);
                 Dish.Image = fileName;
-                var path = Path.Combine(_environment.WebRootPath, "Images",
-                fileName);
+                var path = Path.Combine(_environment.WebRootPath, "Images", fileName);
                 using (var fStream = new FileStream(path, FileMode.Create))
                 {
                     await Image.CopyToAsync(fStream);

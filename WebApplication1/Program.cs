@@ -21,6 +21,12 @@ namespace WebApplication1
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(lp =>
+                {
+                    lp.ClearProviders();
+                    lp.AddFilter("Microsoft", LogLevel.None);
                 });
-    }
 }
+}
+
